@@ -1,7 +1,9 @@
+### imports
 from tkinter import *
 import random
 import time
 
+### Classes
 class Jeu:
     def __init__(self) -> None:
         self.tk = Tk()
@@ -60,7 +62,45 @@ class LutinPlateforme(Lutin):
                                                image=self.image_photo, anchor='nw')
           self.coordonnees = Coords(x, y, x + largeur, y + hauteur)
 
+class LutinPersonnage(Lutin):
+     def __init__(self, jeu) -> None:
+          super().__init__(jeu)
+          self.images_gauche[
+               PhotoImage(file='Filiforme/fil-G1.gif'),
+               PhotoImage(file='Filiforme/fil-G2.gif'),
+               PhotoImage(file='Filiforme/fil-G3.gif')
+          ]
+          self.images_droite[
+               PhotoImage(file='Filiforme/fil-D1.gif'),
+               PhotoImage(file='Filiforme/fil-D2.gif'),
+               PhotoImage(file='Filiforme/fil-D3.gif')
+          ]
+          self.image = jeu.canvas.create_image(200, 470, image=self.images_gauche[0], anchor='nw')
+          self.x = -2   #déplacement à gauche
+          self.y = 0
+          self.image_courante = 0   # indice de l'image en cours d'affichage
+          self.ajout_image_courante = 1 # prochaine image
+          self.compte_sauts = 0
+          self.derniere_heure = time.time() # mémorise la dernière fois que l'image a changé pendant l'animation du personnage
+          self.coordonnees = Coords()
+          jeu.canvas.bind_all('<KeyPress-Left>', self.tourner_a_gauche)
+          jeu.canvas.bind_all('<KeyPress-Right>', self.tourner_a_droite)
+          jeu.canvas.bind_all('<space>', self.sauter)
 
+          def tourner_a_gauche(self, evt):
+               if self.y == 0:  #si le perso n'est pas en train de sauter ou de tomber
+                    self.x = -2
+
+          def tourner_à_droite(self, evt):
+               if self.y == 0:
+                    self.x = 2
+        
+          def sauter(self, evt):
+               if self.y == 0:
+                    self.y = -4
+                    self.compte_sauts = 0   # gestion de la gravité, ne peux pas sauter à l'infini
+          
+### fonctions           
 def dans_x(co1, co2):
     if (co1.x1 > co2.x1 and co1.x1 < co2.x2) \
     or (co1.x2 > co2.x1 and co1.x2 < co2.x2) \
@@ -104,6 +144,7 @@ def collision_bas(y, co1, co2):
                return True
      return False
 
+### Programme principal
 jeu=Jeu()
 
 plateforme1 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme1.gif'), 0, 480, 100, 10)
@@ -117,6 +158,18 @@ plateforme8 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme2.gif')
 plateforme9 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme3.gif'), 170, 250, 32, 10)
 plateforme10 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme3.gif'), 230, 200, 32, 10)
 
+# rajout à la liste des lutins
+jeu.lutins.append(plateforme1)
+jeu.lutins.append(plateforme2)
+jeu.lutins.append(plateforme3)
+jeu.lutins.append(plateforme4)
+jeu.lutins.append(plateforme5)
+jeu.lutins.append(plateforme6)
+jeu.lutins.append(plateforme7)
+jeu.lutins.append(plateforme8)
+jeu.lutins.append(plateforme9)
+jeu.lutins.append(plateforme10)
+                                    
 jeu.boucle_principale()
 
                    
