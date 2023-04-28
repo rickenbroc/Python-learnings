@@ -16,7 +16,7 @@ class Jeu:
         self.canvas.update()
         self.hauteur_canevas = 500
         self.largeur_canevas = 500
-        self.ap = PhotoImage(file="Filiforme/arriere-plan.gif")
+        self.ap = PhotoImage(file="arriere-plan.gif")
         larg = self.ap.width()
         haut = self.ap.height()
         for x in range(0, 5):
@@ -65,8 +65,8 @@ class LutinPlateforme(Lutin):
 class LutinPersonnage(Lutin):
      def __init__(self, jeu) -> None:
           Lutin.__init__(self, jeu)
-          self.images_gauche = [PhotoImage(file='Filiforme/fil-G1.gif'), PhotoImage(file='Filiforme/fil-G2.gif'), PhotoImage(file='Filiforme/fil-G3.gif')]
-          self.images_droite = [PhotoImage(file='Filiforme/fil-D1.gif'), PhotoImage(file='Filiforme/fil-D2.gif'), PhotoImage(file='Filiforme/fil-D3.gif')]
+          self.images_gauche = [PhotoImage(file='fil-G1.gif'), PhotoImage(file='fil-G2.gif'), PhotoImage(file='fil-G3.gif')]
+          self.images_droite = [PhotoImage(file='fil-D1.gif'), PhotoImage(file='fil-D2.gif'), PhotoImage(file='fil-D3.gif')]
           self.image = jeu.canvas.create_image(200, 470, image=self.images_gauche[0], anchor='nw')
           self.x = -2   #déplacement à gauche
           self.y = 0
@@ -137,7 +137,7 @@ class LutinPersonnage(Lutin):
           tombe = True
           
           # le personnage a-t-il touché le bas ou le haut du canevas ?
-          if self.y > 0 and co.y2 >= self.jeu.hauteur_canevas:   # tombe
+          if self.y > 0 and co.y2 == self.jeu.hauteur_canevas:   # tombe
                self.y = 0
                bas = False #tout en bas, plus besoin de vérifier
           elif self.y < 0 and co.y1 <= 0:                        #saute
@@ -188,21 +188,9 @@ class LutinPersonnage(Lutin):
                if gauche and self.x < 0 and collision_gauche(co, co_lutin):
                     self.x = 0
                     gauche = False
-                    if lutin.finjeu:
-                         # masque M.Filiforme
-                         jeu.canvas.itemconfig(self.image, state='hidden')
-                         lutin.fermer_porte()
-                         self.jeu.enfonction = False
-                         
                if droite and self.x > 0 and collision_droite(co, co_lutin):
                     self.x = 0
                     droite = False
-                    if lutin.finjeu:
-                         jeu.canvas.itemconfig(self.image, state='hidden')
-                         jeu.canvas.create_image(45, 30, image=PhotoImage("filiforme/porte1.gif"), anchor="nw")
-                         lutin.fermer_porte()
-                         self.jeu.enfonction = False
-                        
 
           if tombe and bas and self.y ==0 and co.y2 < self.jeu.hauteur_canevas:
                self.y = 4
@@ -210,18 +198,6 @@ class LutinPersonnage(Lutin):
 
 
                
-class LutinPorte(Lutin):
-     def __init__(self, jeu, image_photo, x, y, largeur, hauteur) -> None:
-          super().__init__(jeu)
-          self.image_photo = image_photo
-          self.image = jeu.canvas.create_image(x, y, image=self.image_photo, anchor='nw')
-          self.coordonnees= Coords(x, y, x + largeur / 2, y + hauteur)
-          self.finjeu = True
-     
-     def fermer_porte(self):
-          jeu.canvas.itemconfig(self.image, state = 'hidden')
-          self.image = jeu.canvas.create_image(45, 30, image=PhotoImage("filiforme/porte1.gif"), anchor="nw")
-          
 ### fonctions           
 def dans_x(co1, co2):
     if (co1.x1 > co2.x1 and co1.x1 < co2.x2) \
@@ -269,16 +245,16 @@ def collision_bas(y, co1, co2):
 ### Programme principal
 jeu=Jeu()
 
-plateforme1 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme1.gif'), 0, 480, 100, 10)
-plateforme2 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme1.gif'), 150, 440, 100, 10)
-plateforme3 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme1.gif'), 300, 400, 100, 10)
-plateforme4 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme1.gif'), 300, 160, 100, 10)
-plateforme5 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme2.gif'), 175, 350, 66, 10)
-plateforme6 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme2.gif'), 50, 300, 66, 10)
-plateforme7 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme2.gif'), 170, 120, 66, 10)
-plateforme8 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme2.gif'), 45, 60, 66, 10)
-plateforme9 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme3.gif'), 170, 250, 32, 10)
-plateforme10 = LutinPlateforme(jeu, PhotoImage(file='Filiforme/plate-forme3.gif'), 230, 200, 32, 10)
+plateforme1 = LutinPlateforme(jeu, PhotoImage(file='plate-forme1.gif'), 0, 480, 100, 10)
+plateforme2 = LutinPlateforme(jeu, PhotoImage(file='plate-forme1.gif'), 150, 440, 100, 10)
+plateforme3 = LutinPlateforme(jeu, PhotoImage(file='plate-forme1.gif'), 300, 400, 100, 10)
+plateforme4 = LutinPlateforme(jeu, PhotoImage(file='plate-forme1.gif'), 300, 160, 100, 10)
+plateforme5 = LutinPlateforme(jeu, PhotoImage(file='plate-forme2.gif'), 175, 350, 66, 10)
+plateforme6 = LutinPlateforme(jeu, PhotoImage(file='plate-forme2.gif'), 50, 300, 66, 10)
+plateforme7 = LutinPlateforme(jeu, PhotoImage(file='plate-forme2.gif'), 170, 120, 66, 10)
+plateforme8 = LutinPlateforme(jeu, PhotoImage(file='plate-forme2.gif'), 45, 60, 66, 10)
+plateforme9 = LutinPlateforme(jeu, PhotoImage(file='plate-forme3.gif'), 170, 250, 32, 10)
+plateforme10 = LutinPlateforme(jeu, PhotoImage(file='plate-forme3.gif'), 230, 200, 32, 10)
 
 # rajout à la liste des lutins
 jeu.lutins.append(plateforme1)
@@ -292,12 +268,7 @@ jeu.lutins.append(plateforme8)
 jeu.lutins.append(plateforme9)
 jeu.lutins.append(plateforme10)
 
-# rajout M.Filiforme
 personnage = LutinPersonnage(jeu)
 jeu.lutins.append(personnage)
 
-# rajout Porte de sortie
-porte = LutinPorte(jeu, PhotoImage(file="filiforme/porte2.gif"), 45, 30, 40, 35)
-jeu.lutins.append(porte)
-
-jeu.boucle_principale()
+jeu.boucle_principale()        
