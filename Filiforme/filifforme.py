@@ -16,9 +16,11 @@ class Jeu:
         self.canvas.update()
         self.hauteur_canevas = 500
         self.largeur_canevas = 500
+        self.texte_fin_partie = self.canvas.create_text(250, 250, text="Tu as gagné !", state="hidden")
         self.ap = PhotoImage(file="Filiforme/arriere-plan.gif")
         larg = self.ap.width()
         haut = self.ap.height()
+        
         for x in range(0, 5):
                 for y in range(0, 5):
                     self.canvas.create_image(x * larg, y * haut, \
@@ -31,9 +33,14 @@ class Jeu:
               if self.enfonction == True:
                     for lutin in self.lutins:
                         lutin.deplacer()
-                    self.tk.update_idletasks()
-                    self.tk.update()
-                    time.sleep(0.01)
+              else:
+                   time.sleep(1)
+                   self.canvas.itemconfig(self.texte_fin_partie, state='normal')
+                   
+              self.tk.update_idletasks()
+              self.tk.update()
+              time.sleep(0.01)
+
 
 class Coords:
      def __init__(self, x1=0, y1=0, x2=0, y2=0) -> None:
@@ -189,38 +196,45 @@ class LutinPersonnage(Lutin):
                     self.x = 0
                     gauche = False
                     if lutin.finjeu:
-                         # masque M.Filiforme
-                         jeu.canvas.itemconfig(self.image, state='hidden')
-                         lutin.fermer_porte()
-                         self.jeu.enfonction = False
+                         # si finjeu = true alors lutin est la porte
+                         self.fin(lutin)
                          
                if droite and self.x > 0 and collision_droite(co, co_lutin):
                     self.x = 0
                     droite = False
                     if lutin.finjeu:
-                         jeu.canvas.itemconfig(self.image, state='hidden')
-                         jeu.canvas.create_image(45, 30, image=PhotoImage("filiforme/porte1.gif"), anchor="nw")
-                         lutin.fermer_porte()
-                         self.jeu.enfonction = False
+                         self.fin(lutin)
                         
 
           if tombe and bas and self.y ==0 and co.y2 < self.jeu.hauteur_canevas:
                self.y = 4
           self.jeu.canvas.move(self.image, self.x, self.y)
+          
+     def fin(self, lutin):
+          self.jeu.enfonction = False
+          lutin.ouvrir_porte()
+          time.sleep(1)
+          self.jeu.canvas.itemconfig(self.image, state='hidden')
+          lutin.fermer_porte()
 
 
                
 class LutinPorte(Lutin):
-     def __init__(self, jeu, image_photo, x, y, largeur, hauteur) -> None:
+     def __init__(self, jeu, x, y, largeur, hauteur) -> None:
           super().__init__(jeu)
-          self.image_photo = image_photo
-          self.image = jeu.canvas.create_image(x, y, image=self.image_photo, anchor='nw')
+          self.porte_fermee = PhotoImage('Filiforme/porte1.gif')
+          self.porte_ouverte = PhotoImage("filiforme/porte2.gif")
+          self.image = jeu.canvas.create_image(x, y, image=self.porte_fermee, anchor='nw')
           self.coordonnees= Coords(x, y, x + largeur / 2, y + hauteur)
           self.finjeu = True
      
+     def ouvrir_porte(self):
+          jeu.canvas.itemconfig(self.image, image = self.porte_ouverte)
+          self.jeu.tk.update_idletasks()
+          
      def fermer_porte(self):
-          jeu.canvas.itemconfig(self.image, state = 'hidden')
-          self.image = jeu.canvas.create_image(45, 30, image=PhotoImage("filiforme/porte1.gif"), anchor="nw")
+          jeu.canvas.itemconfig(self.image, image = self.porte_fermee)
+          self.jeu.tk.update_idletasks()
           
 ### fonctions           
 def dans_x(co1, co2):
@@ -297,7 +311,7 @@ personnage = LutinPersonnage(jeu)
 jeu.lutins.append(personnage)
 
 # rajout Porte de sortie
-porte = LutinPorte(jeu, PhotoImage(file="filiforme/porte2.gif"), 45, 30, 40, 35)
+porte = LutinPorte(jeu, 45, 30, 40, 35)
 jeu.lutins.append(porte)
 
 jeu.boucle_principale()
